@@ -63,7 +63,7 @@
       return $this->db->where('email', $email)->where('id !=', $id)->get('users')->row();
     }
     public function set_role($user_id, $role_id) {
-      return $this->db->where('id',$id)->update('users', ['is_admin'=>$role_id]);
+      return $this->db->where('id', $user_id)->update('users', ['is_admin' => $role_id]);
     }
     public function insert_book($book) {
       return $this->db->insert('books', $book);

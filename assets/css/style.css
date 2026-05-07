@@ -42,7 +42,7 @@ body.modal-open {
   border-bottom: 1px solid var(--border);
   position: sticky;
   top: 0;
-  z-index: 1081 !important;
+  z-index: 1030 !important;
 }
 
 .app-navbar-inner {

@@ -138,19 +138,28 @@ class Users extends MY_Controller {
             "is_admin" => $user_role,
         ];
 
-        // $this->general_model->add_user($data);
         if(!empty($data["email"]) && !empty($data["full_name"]) && !empty($data["password"])){
             $user = $this->general_model->check_email_exists($data["email"]);
             if(!$user) {
-                $html = '<div class="alert alert-success" role="alert">  İstifadəçi məlumatları yeniləndi !</div>';
                 $data["password"] = md5($data["password"]);
-                $user = $this->general_model->add_user($data);
-                $this->output
-                    ->set_content_type('application/json')
-                    ->set_output(json_encode([
-                        "error" => false,
-                        "html" => $html,
-                    ]));
+                $inserted = $this->general_model->add_user($data);
+                if ($inserted) {
+                    $html = '<div class="alert alert-success" role="alert">İstifadəçi əlavə olundu!</div>';
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_output(json_encode([
+                            "error" => false,
+                            "html" => $html,
+                        ]));
+                } else {
+                    $html = '<div class="alert alert-danger" role="alert">İstifadəçi əlavə edilərkən xəta baş verdi.</div>';
+                    $this->output
+                        ->set_content_type('application/json')
+                        ->set_output(json_encode([
+                            "html" => $html,
+                            "error" => true,
+                        ]));
+                }
             }else{
                 $html = '<div class="alert alert-danger" role="alert"> Bu e-poçt adresi ilə istifadəçi mövcuddur!</div>';
                 $this->output
@@ -162,21 +171,17 @@ class Users extends MY_Controller {
                     ]));
             }
         }else{
-            $html = '
-                <div class="alert alert-danger" role="alert">
-            ';
+            $messages = [];
             if(empty($data["email"])){
-                echo "E-poçt boş ola bilməz";
+                $messages[] = "E-poçt boş ola bilməz";
             }
             if(empty($data["full_name"])){
-                echo "Tam ad boş ola bilməz";
+                $messages[] = "Tam ad boş ola bilməz";
             }
             if(empty($data["password"])){
-                echo "Şifrəniz boş ola bilməz";
+                $messages[] = "Şifrə boş ola bilməz";
             }
-            $html .= '
-                </div>
-            ';
+            $html = '<div class="alert alert-danger" role="alert">'.implode("<br>", $messages).'</div>';
             $this->output
                 ->set_content_type('application/json')
                 ->set_output(json_encode([
